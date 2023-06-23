@@ -1,13 +1,12 @@
  {
   "builders": [{
-    "type": "virtualbox-iso",
-    "guest_os_type": "debian-64",
+    "type": "parallels-iso",
+    "guest_os_type": "debian",
     "iso_url": "{{user `mirror`}}/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso",
     "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
     "output_directory": "output-debian-12.0-amd64-{{build_type}}",
     "vm_name": "packer-debian-12.0-amd64",
     "disk_size": "{{user `disk_size`}}",
-    "headless": "{{user `headless`}}",
     "http_directory": "http",
     "boot_wait": "5s",
     "boot_command": [
@@ -21,10 +20,12 @@
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
     "shutdown_command": "sudo systemctl poweroff",
-    "vboxmanage": [
-      ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
-      ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
-      ["modifyvm", "{{.Name}}", "--audio", "none", "--nat-localhostreachable1", "on"]
+    "parallels_tools_flavor": "lin",
+    "prlctl": [
+       ["set", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
+       ["set", "{{.Name}}", "--memsize", "{{user `memory`}}"],
+       ["set", "{{.Name}}", "--3d-accelerate", "off"],
+       ["set", "{{.Name}}", "--adaptive-hypervisor", "on"]
     ]
   }],
   "provisioners": [{
@@ -37,7 +38,7 @@
       "debian/sudoers.sh",
       "debian/vagrant_debian.sh",
       "debian/systemd.sh",
-      "debian/virtualbox.sh",
+      "debian/parallels.sh",
       "debian/cleanup_debian.sh",
       "debian/minimize.sh"
     ]
